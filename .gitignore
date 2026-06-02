@@ -1,0 +1,17 @@
+# Python 快取
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# 專案產生的野生數據源 (不進版控)
+machine_raw_logs.csv
+
+# 虛擬環境與 IDE 設定
+.venv/
+venv/
+ENV/
+.vscode/
+.cursor/
+.idea/
+.DS_Store
