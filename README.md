@@ -1,33 +1,22 @@
-這是一份可以直接複製貼上的完整 Markdown 原始碼。我已經將順序調整為最具邏輯性的「痛點先行 ──> 架構圖 ──> 核心邏輯 ──> 部署說明」，並格式化好程式碼區塊（Code Blocks）與引言，你可以直接全選複製到你的 `README.md` 中：
+## **ATE 測試設備高頻時間序列數據流之 SPC 動態過濾與False Positive治理管線(ATE-SPC-Pipeline)**
 
-```markdown
-# 📈 ATE High-Frequency Time-Series Data Stream SPC & False Positive Governance Pipeline
+### 專案簡介
+模擬半導體測試設備在量測電壓、電流與溫度時產生的高頻 Raw Data，並建立一套從
+**Data Generation → Data Ingestion → SQL Transformation → SPC Governance → SSoT Fact Table → Streamlit Dashboard** 的端到端資料管線。
+當測試設備產生單點突波時，若傳統量測系統僅依賴固定閾值進行判斷，例如 WHERE voltage > 8.0V，就容易將短暫的環境噪音誤判為真實異常，形成 False Positive，將環境噪音誤判為真實異常，導致 MES 系統誤報、產線無故停機與工程師不必要的排查成本，以及整體稼動率下降。本專案的目標是建立一套能同時兼顧 降低 False Positive 與 避免 False Negative 的資料治理流程。此專案從高頻測試資料生成、資料載入、SQL 清洗轉換、SPC 統計治理，到建立可追溯的 SSoT Fact Table，最後透過 Streamlit Dashboard 呈現異常判斷、突波治理結果與機台訊號品質監控。
 
-> **ATE 測試設備高頻時間序列數據流之 SPC 動態過濾與 False Positive 治理管線**
+ ### 專案重點
+* 使用 NumPy 模擬具備工業物理語境的 ATE 高頻時間序列資料
+* 使用 Docker PostgreSQL 建立 Landing Zone
+* 使用 Pandas Chunk-based Ingestion 避免大型 CSV 一次載入造成 OOM
+* 使用 SQL Window Functions 建立 Rolling Average、Rolling StdDev、Z-Score
+* 使用 Lag / Lead 判斷前後時間點，區分 False Positive 與 True Anomaly
+* 使用 Downsampling 將高頻資料轉為可查詢的分鐘級 Fact Table
+* 使用 MD5 Hash Key + `ON CONFLICT DO UPDATE` 建立 Idempotent Pipeline
+* 使用 Streamlit + Plotly 建立 Data Product Dashboard
+* 專案語境對應 ATE、MES、SPC、半導體測試、智慧製造資料工程
 
----
-
-## 📖 專案背景與核心痛點 (Background & Pain Points)
-
-在半導體自動化測試（ATE）無塵室中，測試機台會以高頻頻率採集功率元件的物理訊號。然而，現場不可避免地存在**環境電磁干擾 (EMI)**，常導致感測器產生孤立的**「單點隨機突波 (Spike)」**。
-
-* **傳統做法的災難**：傳統量測系統僅依賴死板的靜態閾值限制（如 `WHERE voltage > 8.0V`），會將這些環境雜訊誤判為產品不良，進而導致製造執行系統（MES）頻繁發出誤報警、產線冤枉停機、工廠稼動率嚴重下滑。這在工業上被稱為 **False Positive（偽陽性）治理失敗**。
-* **過度過濾的連連看災難**：若一味抹平突波，又極易陷入 **False Negative（漏報/真瑕疵晶片流出）** 的系統性風險。
-
-本專案全方位遵循**數據生命週期演進（Ingestion ──> SSoT 建模 ──> Data Product 變現）**，實作出一套兼顧「過濾誤報」與「防止漏報」的雙軌動態治理中台。
-
-### 🔄 數據演進生命週期
-```text
-[1. NumPy 模擬機台高頻訊號] ──> [2. Docker Postgres Landing Zone 接入]
-                                                       │
-                                                       ▼
-[4. Streamlit 數據資產變現消費] ──> [3. SQL 進階視窗函數 (SPC Z-Score 智慧精煉)]
-
-```
-
----
-
-## 🏗️ 1. 架構圖 (Data Pipeline Architecture)
+## 🏗️ 1.架構圖 (Data Pipeline Architecture)
 
 ```text
 [1. Data Generation]     [2. DB Pushdown Governance]    [3. Production Analytics]
@@ -47,54 +36,115 @@
                                         [ Offline Audit Snapshot ]
                                         (不提交至 Git, 防止資安外洩)
 
-```
 
+## Repo 結構
+
+```text
+ate-spc-false-positive-pipeline/
+│
+├── README.md
+├── requirements.txt
+│
+├── src/
+│   ├── generate_machine_ts_data.py
+│   ├── ingest_raw_to_landing.py
+│   └── app_dashboard.py
+│
+├── sql/
+│   └── transform_spc_pipeline.sql
+│
+├── docs/
+│   ├── day1_data_gen.md
+│   ├── day2_ingestion.md
+│   ├── day3_4_spc_sql.md
+│   └── day5_dashboard.md
+│
+├── assets/
+│   ├── architecture.png
+│   └── dashboard_screenshot.png
+│
+└── data/
+    └── .gitkeep
+```
 ---
+## 解決的問題
 
-## 🛠️ 2. 技術棧與關鍵核心實現 (Tech Stack & Core Logic)
-
-* **Data Ingestion**: Python (NumPy) 模擬高頻、具 EMI 雜訊之物理訊號，並導入 PII 數據去識別化遮罩。
-* **Data Storage**: PostgreSQL (基於 Docker 容器化部署 Landing Zone)。
-* **Data Governance**: 精煉 SQL 進階視窗函數（Window Functions），實作移動視窗 Z-Score ($3\sigma$) 動態閾值，達成智慧型 False Positive 自癒過濾。
-* **Data Product**: Streamlit 建立多維度 KPI 數據監控面板，實現數據資產變現與消費。
-
----
-
-## 🚀 3. 快速開始與部署說明 (Quick Start)
-
-*(此處可根據實際腳本名稱修改)*
-
-1. **啟動數據庫環境**
-```bash
-docker-compose up -d
-
-```
+### 1. False Positive 誤報
+ATE 測試設備可能出現單點突波，例如電壓瞬間跳到 9V，但下一筆資料立刻恢復正常。
+這種情況可能來自：
+* 電磁干擾 EMI
+* Sensor Jump
+* 接線瞬間不穩
+* 資料採集瞬間異常
+* 通訊雜訊
+傳統固定閾值會把它判定成 FAIL，但實際上不一定代表產品或機台真的異常。
 
 
-2. **執行高頻訊號模擬與寫入 (Bulk Insert)**
-```bash
-python data_simulator.py
+### 2. True Anomaly 真異常
+如果電壓連續多個時間點異常，並伴隨電流、溫度、測試時間同步上升，就更可能是真實硬體異常。
+例如：
+* 元件過熱
+* Power device breakdown
+* 測試站異常
+* 接觸阻抗異常
+* 機台測試條件失控
 
-```
+### 3. False Negative 潛在漏報
+有些資料沒有超過硬性閾值，但多個特徵已經出現風險。
+例如：
+* 電壓尚未破表
+* 溫度開始上升
+* test_duration_ms 拉長
+* 同一通道重複出現模糊異常
+本專案將這類資料標記為 `is_fn_suspect_flagged`，放入冷路徑稽核區，供工程師後續分析。
 
+## Data Pipeline Flow
 
-3. **啟動 Streamlit 前端看板**
-```bash
-streamlit run app.py
+### 1：Data Generation
+使用 Python / NumPy 模擬 100,000 筆 ATE 高頻時間序列資料。
+模擬內容包含：
+* 正常 5V 波形
+* 單點突波 noise
+* 連續真異常 true_fail
+* Sensor disconnect `-99.0`
+* machine_id / channel_id / lot_id / wafer_id_unit_id 等追溯欄位
+詳細說明請見：
+[docs/day1_data_gen.md](docs/day1_data_gen.md)
 
-```
+### 2：Data Ingestion
+使用 Docker PostgreSQL 建立 Landing Zone，並使用 Pandas Chunk-based Streaming 將 CSV 分批寫入 `raw_machine_logs`。
+重點：
+* 避免一次載入大型 CSV 造成記憶體壓力
+* 模擬 Data Server 接收 ATE log
+* 保留原始資料，不在 Landing Zone 過早清洗
 
+詳細說明請見：
+[docs/day2_ingestion.md](docs/day2_ingestion.md)
 
+### 3：SPC SQL Transformation
+使用 PostgreSQL SQL Pipeline 進行資料治理。
+核心邏輯包含：
+* `AVG() OVER()` Rolling Average
+* `STDDEV() OVER()` Rolling StdDev
+* Z-Score
+* `LAG()` / `LEAD()` 前後時序關聯
+* False Positive noise filtering
+* True anomaly detection
+* False negative suspect flagging
+* Downsampling
+* Upsert Idempotency
 
----
+詳細說明請見：
+[docs/day3_4_spc_sql.md](docs/day3_4_spc_sql.md)
 
-## 🔒 4. 本地審計與資安規範 (Security & Compliance)
+### 4：Dashboard
+使用 Streamlit + Plotly 建立資料產品化看板。
+Dashboard 顯示：
+* False Positive 攔截次數
+* 預估避免誤停機成本
+* True Anomaly 告警
+* FN Suspect 冷路徑稽核
+* 平均電壓與最高電壓趨勢圖
 
-> ⚠️ **重要安全性提醒**：為了防範無塵室生產環境敏感數據外洩，本專案設有嚴格的資安分流機制。
-
-* 核心事實表所導出的 **`Offline Audit Snapshot` (離線審計快照)** 已強制加入 `.gitignore`。
-* 任何包含真實機台參數、產線編號等敏感快照**絕不提交至 Git 遠端數據庫**，僅留存於本地安全網域供線下稽核。
-
-```
-
-```
+詳細說明請見：
+[docs/day5_dashboard.md](docs/day5_dashboard.md)
