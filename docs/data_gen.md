@@ -1,5 +1,3 @@
-# docs/day1_data_gen.md
-
 # Day 1：ATE 高頻時間序列資料模擬與物理語境設計
 
 ## 1. 本階段目標
@@ -245,9 +243,7 @@ print(df[["voltage", "current", "temperature"]].describe())
 
 這一階段可以這樣解釋：
 
-> 我沒有使用一般網路上的 generic dataset，而是根據 ATE 測試設備的物理語境自行模擬資料。
-> 資料中包含正常電壓波形、單點 sensor noise、連續硬體異常與 sensor disconnect。
-> 這樣可以讓後續的資料管線不只是做 ETL，而是解決工業現場真正會遇到的 False Positive 與 True Anomaly 分辨問題。
+> 我沒有使用一般網路上的 generic dataset，而是根據 ATE 測試設備的物理語境自行模擬資料。資料中包含正常電壓波形、單點 sensor noise、連續硬體異常與 sensor disconnect。這樣可以讓後續的資料管線不只是做 ETL，而是解決工業現場真正會遇到的 False Positive 與 True Anomaly 分辨問題。
 
 ---
 
@@ -260,5 +256,3 @@ machine_raw_logs.csv
 ```
 
 此檔案會作為 Day 2 PostgreSQL Landing Zone 的資料來源。
-
----
