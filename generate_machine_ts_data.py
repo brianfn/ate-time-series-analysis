@@ -4,7 +4,7 @@ import datetime
 import hashlib
 
 def generate_industrial_data(num_records=100000):
-    print("🚀 Day 1: 開始模擬致茂 ATE 測試機台高頻時間序列數據...")
+    print("Start generating machine data...")
     
     # 1. 基礎時序與機台分類設定
     start_time = datetime.datetime(2026, 6, 1, 8, 0, 0)
@@ -100,8 +100,8 @@ def generate_industrial_data(num_records=100000):
     output_filename = "machine_raw_logs.csv"
     df.to_csv(output_filename, index=False)
     
-    print(f"📦 數據模擬完成！已成功生成 {len(df)} 筆高頻數據並匯出至 {output_filename}")
-    print("💡 物理特徵已埋入：5V正常弦波、孤立單點噪音（偽陽性）、連續15點異常（真異常）、-99.0（斷線髒資料）。")
+    print(f"數據模擬完成，已成功生成 {len(df)} 筆高頻數據並匯出至 {output_filename}")
+    print("物理特徵已埋入：5V正常弦波、孤立單點噪音（偽陽性）、連續15點異常（真異常）、-99.0（斷線髒資料）。")
 
 if __name__ == "__main__":
     generate_industrial_data()

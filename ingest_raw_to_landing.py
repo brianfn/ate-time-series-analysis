@@ -4,11 +4,11 @@ import time
 import os
 
 def ingest_csv_to_postgres(csv_path="machine_raw_logs.csv", chunk_size=20000):
-    print("🚀 Day 2: 開始啟動 ATE 高頻數據異質接入管線 (Ingestion)...")
+    print("Start ingesting data to PostgreSQL...")
     
     # 1. 檢查 Day 1 的水源是否存在
     if not os.path.exists(csv_path):
-        print(f"❌ 錯誤：找不到原始數據檔案 {csv_path}！請先執行 Day 1 的模擬腳本。")
+        print(f"錯誤：找不到原始數據檔案 {csv_path}。")
         return
 
     # 2. 建立資料庫連線引擎 (Connection Engine)
@@ -53,10 +53,10 @@ def ingest_csv_to_postgres(csv_path="machine_raw_logs.csv", chunk_size=20000):
     throughput = total_rows_inserted / total_duration if total_duration > 0 else 0
     
     print("\n=========================================================================")
-    print(f"✅ 數據接入大功告成！")
-    print(f"📊 總落底筆數：{total_rows_inserted} 筆")
-    print(f"⏳ 總共花費時間：{total_duration:.2f} 秒")
-    print(f"⚡ 數據吞吐量 (Throughput)：{throughput:.0f} rows/sec")
+    print(f"✅ 數據接入成功")
+    print(f"總落底筆數：{total_rows_inserted} 筆")
+    print(f"總共花費時間：{total_duration:.2f} 秒")
+    print(f"數據吞吐量 (Throughput)：{throughput:.0f} rows/sec")
     print("=========================================================================")
 
 if __name__ == "__main__":
