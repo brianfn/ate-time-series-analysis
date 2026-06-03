@@ -5,7 +5,7 @@ import plotly.express as px
 
 # 1. 網頁基本配置
 pd_st.set_page_config(
-    page_title="Chroma ATE 高頻測試數據智慧治理面板",
+    page_title="ATE 高頻測試數據治理Dashboard",
     page_icon="📈",
     layout="wide"
 )
@@ -30,20 +30,20 @@ def load_fact_data():
 try:
     df = load_fact_data()
 except Exception as e:
-    pd_st.error(f"❌ 無法連線至資料庫事實表，請確保 Day 2/3/4 步驟皆已完成！錯誤訊息：{e}")
+    pd_st.error(f"無法連線至資料庫事實表，錯誤訊息：{e}")
     pd_st.stop()
 
 # =========================================================================
 # 前端畫面渲染開始
 # =========================================================================
-pd_st.title("🚀 工業級 ATE 測試設備高頻數據流之 SPC 動態過濾與偽陽性治理管線")
-pd_st.caption("數據生命週期最終階段：數據資產產品化與製程根因觀測看板 (Data Product Layer)")
+pd_st.title("ATE 測試設備高頻數據流之 SPC 動態過濾與偽陽性治理管線")
+pd_st.caption("數據資產產品化與測試製程根因觀測 (Data Product Layer)")
 
 if df.empty:
-    pd_st.warning("⚠️ 資料庫事實表目前為空，請確認 SQL 管線已成功將資料精煉寫入！")
+    pd_st.warning("⚠️ 資料庫事實表目前為空，請確認 SQL 管線已成功將資料寫入")
 else:
     # 頂部控制過濾器：允許高管一鍵篩選機台或批次
-    pd_st.sidebar.header("🛠️ 產線觀測篩選器")
+    pd_st.sidebar.header("產線觀測篩選器")
     selected_machine = pd_st.sidebar.selectbox("選擇觀測 ATE 機台", options=["全部"] + list(df['machine_id'].unique()))
     selected_lot = pd_st.sidebar.selectbox("選擇製程批號 (Lot ID)", options=["全部"] + list(df['lot_id'].unique()))
 

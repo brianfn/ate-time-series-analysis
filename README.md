@@ -147,4 +147,4 @@ Dashboard 顯示：
 * 平均電壓與最高電壓趨勢圖
 
 詳細說明請見：
-[docs/day5_dashboard.md](docs/day5_dashboard.md)
+[docs/dashboard.md](docs/dashboard.md)
