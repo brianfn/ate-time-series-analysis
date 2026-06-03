@@ -141,45 +141,13 @@ ORDER BY COUNT(*) DESC;
 ```sql
 \q
 ```
+---
+
 
 ---
 
-## 9. 為什麼 Landing Zone 不先清洗 -99.0？
+## 9. 本階段產出
 
-這是資料工程中很重要的觀念。
-
-原始資料層應該盡量保留資料來源的原貌。
-
-如果 Sensor Disconnect 在機台端就是用 `-99.0` 表示，那麼 Landing Zone 應該保留它。
-
-原因：
-
-* 保留 Audit Trail
-* 支援資料稽核
-* 支援重新計算
-* 避免清洗邏輯污染原始資料
-* 讓後續轉換層負責 business rule
-
-因此本專案會在 Day 3 & 4 的 SQL Transformation 中，才將 `-99.0` 轉成 NULL。
-
----
-
-## 10. 面試說明重點
-
-這一階段可以這樣說明：
-
-> 我使用 PostgreSQL 建立 Landing Zone，模擬 ATE Data Server 接收機台 Log。
-> 為了避免大型 CSV 一次載入造成 Out of Memory，我使用 Pandas chunksize 進行 Chunk-based Ingestion。
-> Landing Zone 保留原始資料，不在接入時過早清洗，這樣可以確保資料可追溯，也方便後續 SQL Pipeline 改版後重新計算。
-
----
-
-## 11. 本階段產出
-
-完成 Day 2 後，PostgreSQL 會有：
-
-```text
+`
 raw_machine_logs
-```
-
-此表將作為 Day 3 & Day 4 SPC SQL Transformation 的資料來源。
+`
