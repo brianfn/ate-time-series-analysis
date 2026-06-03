@@ -144,9 +144,7 @@ WHERE voltage > 8
 
 本專案使用：
 
-```text
--99.0
-```
+`-99.0`
 
 代表 Sensor Disconnect 或 Data Server Timeout。
 
@@ -186,7 +184,7 @@ python3 src/generate_machine_ts_data.py
 
 產出結果：
 
-* `machine_raw_logs.csv` ─ 機器原始時間序列日誌資料
+`machine_raw_logs.csv` ─ 機器原始時間序列日誌資料
 
 
 
@@ -196,15 +194,11 @@ python3 src/generate_machine_ts_data.py
 
 預設產生：
 
-```text
-100,000 rows
-```
+`100,000 rows`
 
 時間間隔：
 
-```text
-0.01 seconds
-```
+`0.01 seconds`
 
 也就是模擬 100Hz 的高頻量測資料。
 
@@ -236,7 +230,5 @@ You can notice:
 
 ## 9. 本階段產出
 
-```text
-machine_raw_logs.csv
-```
+`machine_raw_logs.csv`
 此檔案作為 Next step: PostgreSQL Landing Zone 的資料來源。
