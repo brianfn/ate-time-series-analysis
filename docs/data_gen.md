@@ -186,9 +186,7 @@ python3 src/generate_machine_ts_data.py
 
 產出結果：
 
-```text
-machine_raw_logs.csv | 機器原始時間序列日誌資料
-```
+* `machine_raw_logs.csv` ─ 機器原始時間序列日誌資料
 
 
 
