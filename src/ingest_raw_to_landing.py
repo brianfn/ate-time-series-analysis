@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 import time
 import os
 
-def ingest_csv_to_postgres(csv_path="machine_raw_logs.csv", chunk_size=20000):
+def ingest_csv_to_postgres(csv_path="../data/machine_raw_logs.csv", chunk_size=20000):
     print("Start ingesting data to PostgreSQL...")
     
     # 1. 檢查 Day 1 的水源是否存在
@@ -61,3 +61,10 @@ def ingest_csv_to_postgres(csv_path="machine_raw_logs.csv", chunk_size=20000):
 
 if __name__ == "__main__":
     ingest_csv_to_postgres()
+
+# 10. 面試說明重點
+# 這一階段可以這樣說明：
+# 我使用 PostgreSQL 建立 Landing Zone，模擬 ATE Data Server 接收機台 Log。 
+# 為了避免大型 CSV 一次載入造成 Out of Memory，我使用 Pandas chunksize 
+# 進行 Chunk-based Ingestion。 Landing Zone 保留原始資料，不在接入時過早清洗，
+# 這樣可以確保資料可追溯，也方便後續 SQL Pipeline 改版後重新計算。

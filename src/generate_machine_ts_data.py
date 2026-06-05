@@ -97,7 +97,7 @@ def generate_industrial_data(num_records=100000):
     })
     
     # 5. 匯出至專案地基 CSV
-    output_filename = "machine_raw_logs.csv"
+    output_filename = "../data/machine_raw_logs.csv"
     df.to_csv(output_filename, index=False)
     
     print(f"數據模擬完成，已成功生成 {len(df)} 筆高頻數據並匯出至 {output_filename}")
