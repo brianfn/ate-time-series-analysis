@@ -144,9 +144,7 @@ WHERE voltage > 8
 
 本專案使用：
 
-```text
--99.0
-```
+`-99.0`
 
 代表 Sensor Disconnect 或 Data Server Timeout。
 
@@ -181,14 +179,14 @@ src/generate_machine_ts_data.py
 在專案根目錄執行：
 
 ```bash
-python3 src/generate_machine_ts_data.py
+python3 src/generate_machine_ts_data.py 
 ```
 
-預期產出：
+產出結果：
 
-```text
-machine_raw_logs.csv
-```
+`machine_raw_logs.csv` ─ 機器原始時間序列日誌資料
+
+
 
 ---
 
@@ -196,19 +194,14 @@ machine_raw_logs.csv
 
 預設產生：
 
-```text
-100,000 rows
-```
+`100,000 rows`
 
 時間間隔：
 
-```text
-0.01 seconds
-```
+`0.01 seconds`
 
 也就是模擬 100Hz 的高頻量測資料。
 
-> 注意：真實 ATE 或示波器資料可能更高頻，但作品集專案以 100,000 筆資料足以展示資料工程設計、SPC 邏輯與 Dashboard。
 
 ---
 
@@ -227,32 +220,15 @@ print(df["anomaly_type"].value_counts())
 print(df[["voltage", "current", "temperature"]].describe())
 ```
 
-你應該會看到：
-
-* 大多數為 normal
-* 少量 noise
-* 少量 true_fail
-* 少量 missing
+You can notice:
 * voltage 多數集中在 5V 附近
 * noise 或 true_fail 區段會高於 8V
 * missing 區段會出現 -99.0
 
 ---
 
-## 9. 面試說明重點
 
-這一階段可以這樣解釋：
+## 9. 本階段產出
 
-> 我沒有使用一般網路上的 generic dataset，而是根據 ATE 測試設備的物理語境自行模擬資料。資料中包含正常電壓波形、單點 sensor noise、連續硬體異常與 sensor disconnect。這樣可以讓後續的資料管線不只是做 ETL，而是解決工業現場真正會遇到的 False Positive 與 True Anomaly 分辨問題。
-
----
-
-## 10. 本階段產出
-
-完成 Day 1 後，會得到：
-
-```text
-machine_raw_logs.csv
-```
-
-此檔案會作為 Day 2 PostgreSQL Landing Zone 的資料來源。
+`machine_raw_logs.csv`
+此檔案作為 Next step: PostgreSQL Landing Zone 的資料來源。
