@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS fct_machine_metrics (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 為高度時序檢索建立索引，優化 Day 5 Streamlit 的讀取速度
+-- 為高度時序檢索建立索引，優化 Streamlit Dashboard 的讀取速度
 CREATE INDEX IF NOT EXISTS idx_fct_machine_ts ON fct_machine_metrics (window_timestamp, machine_id);
 
 

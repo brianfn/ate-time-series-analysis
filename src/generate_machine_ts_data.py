@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import datetime
 import hashlib
+from pathlib import Path
 
 def generate_industrial_data(num_records=100000):
     print("Start generating machine data...")
@@ -27,7 +28,7 @@ def generate_industrial_data(num_records=100000):
     # 每 1000 筆數據代表測試完一顆晶片元件
     unit_ids = [f"WAF-{100000 + i // 1000:05d}" for i in range(num_records)]
     
-    # 2. 物理訊號模擬 (以電壓、電流、溫度為核心事实)
+    # 2. 物理訊號模擬 (以電壓、電流、溫度為核心事實)
     # 正常訊號：5.0V 的規律弦波 + 物理微幅震盪微幅噪聲
     time_axis = np.linspace(0, 100, num_records)
     base_voltage = 5.0 + 0.5 * np.sin(time_axis) + np.random.normal(0, 0.1, num_records)
@@ -97,7 +98,8 @@ def generate_industrial_data(num_records=100000):
     })
     
     # 5. 匯出至專案地基 CSV
-    output_filename = "../data/machine_raw_logs.csv"
+    project_root = Path(__file__).resolve().parent[1]
+    output_path = project_root / "data" / "machine_raw_logs.csv"
     df.to_csv(output_filename, index=False)
     
     print(f"數據模擬完成，已成功生成 {len(df)} 筆高頻數據並匯出至 {output_filename}")

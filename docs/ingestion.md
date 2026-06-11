@@ -3,7 +3,7 @@
 
 # PostgreSQL Landing Zone 與 Chunk-based Ingestion
 
-## 1. 本階段目標
+## 1. 階段目標
 
 將原始日誌資料（machine_raw_logs.csv）導入至 PostgreSQL
 
