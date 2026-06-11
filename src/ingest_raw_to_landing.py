@@ -6,7 +6,7 @@ import os
 def ingest_csv_to_postgres(csv_path="../data/machine_raw_logs.csv", chunk_size=20000):
     print("Start ingesting data to PostgreSQL...")
     
-    # 1. 檢查 Day 1 的水源是否存在
+    # 1. 檢查 source data 是否存在
     if not os.path.exists(csv_path):
         print(f"錯誤：找不到原始數據檔案 {csv_path}。")
         return
